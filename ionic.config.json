@@ -1,0 +1,8 @@
+{
+  "name": "Os Nossos Test",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "f22a45e0"
+}

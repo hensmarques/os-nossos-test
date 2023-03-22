@@ -1,0 +1,22 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="getBackButtonText()" defaultHref="/"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" *ngIf="user">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ user.name }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>E-mail:</strong> {{ user.email }}</p>
+      <p><strong>Sexo:</strong> {{ user.gender === 'M' ? 'Masculino' : 'Feminino' }}</p>
+      <p class="date">
+        <strong>Data de nascimento: </strong>{{ formatDate(user.birthday) }}
+      </p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

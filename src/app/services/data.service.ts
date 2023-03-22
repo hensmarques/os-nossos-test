@@ -1,83 +1,57 @@
+import { SymfonyResponse, unwrapper } from 'src/helpers/api';
+
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-export interface Message {
-  fromName: string;
-  subject: string;
-  date: string;
+const apiUrl = 'http://127.0.0.1:8000'
+
+export enum Gender {
+  Male = 'M',
+  Female = 'F'
+}
+
+export interface User {
   id: number;
-  read: boolean;
+  name: string;
+  email: string;
+  phone: string;
+  birthday: Date;
+  gender: Gender;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  public messages: Message[] = [
-    {
-      fromName: 'Matt Chorsey',
-      subject: 'New event: Trip to Vegas',
-      date: '9:32 AM',
-      id: 0,
-      read: false
-    },
-    {
-      fromName: 'Lauren Ruthford',
-      subject: 'Long time no chat',
-      date: '6:12 AM',
-      id: 1,
-      read: false
-    },
-    {
-      fromName: 'Jordan Firth',
-      subject: 'Report Results',
-      date: '4:55 AM',
-      id: 2,
-      read: false
-    },
-    {
-      fromName: 'Bill Thomas',
-      subject: 'The situation',
-      date: 'Yesterday',
-      id: 3,
-      read: false
-    },
-    {
-      fromName: 'Joanne Pollan',
-      subject: 'Updated invitation: Swim lessons',
-      date: 'Yesterday',
-      id: 4,
-      read: false
-    },
-    {
-      fromName: 'Andrea Cornerston',
-      subject: 'Last minute ask',
-      date: 'Yesterday',
-      id: 5,
-      read: false
-    },
-    {
-      fromName: 'Moe Chamont',
-      subject: 'Family Calendar - Version 1',
-      date: 'Last Week',
-      id: 6,
-      read: false
-    },
-    {
-      fromName: 'Kelly Richardson',
-      subject: 'Placeholder Headhots',
-      date: 'Last Week',
-      id: 7,
-      read: false
-    }
-  ];
+  public users: User[] = []
 
-  constructor() { }
-
-  public getMessages(): Message[] {
-    return this.messages;
+  constructor(private http: HttpClient) { 
+    this.loadUsers();
   }
 
-  public getMessageById(id: number): Message {
-    return this.messages[id];
+  public loadUsers() {
+    this.http.get<SymfonyResponse>(`${apiUrl}/api/users`).subscribe((data) => {
+      const users = unwrapper(data);
+      this.users = users as User[];
+    });
+  }
+
+  public async loadUser(id: number): Promise<User> {
+    const data = await this.http.get<SymfonyResponse>(`${apiUrl}/api/users/${id}`).toPromise() as SymfonyResponse
+    const user = unwrapper(data);
+    return (user as User);
+  }
+
+  public getUsers(): User[] {
+    return this.users
+  }
+
+  public async getUserById(id: number): Promise<User> {
+    const cachedUser = this.users.find((user) => user.id === id) || {} as User
+    if(cachedUser && cachedUser.id) {
+      return cachedUser
+    }
+
+    return await this.loadUser(id)
   }
 }
